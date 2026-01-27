@@ -1,32 +1,48 @@
+
+
+
 describe('Transações', () => {
-    it('Cadastrar uma entrada', () => {
+
+    //* Criando um hook - executar uma ação antes de cada teste *//
+    beforeEach(() => {
         cy.visit("https://devfinance-agilizei.netlify.app")
+    });
+
+    it('Cadastrar uma entrada', () => {
         cy.contains("Nova Transação").click()
         cy.get('#description').type("Freela")
         cy.get('#amount').type(50)
         cy.get('#date').type("2026-06-26")
         cy.contains('button', "Salvar").click()
-
         /* Assertion example */
         cy.get("tbody tr td.description").should("have.text", "Freela")
     })
 
     it('Cadastrar uma saída', () => {
-        cy.visit("https://devfinance-agilizei.netlify.app");
-
         criarTransacao("Cinema", -20);
-        // Removi o espaço antes de "Cinema" para a asserção não falhar
         cy.get("tbody tr td.description").should("have.text", "Cinema");
+  
     })
-}) // Faltava fechar o describe aqui
+
+    it('Excluir uma transação', () => {
+        criarTransacao("Freela", 50)
+        criarTransacao("Mesada", 100)
+
+        cy.contains(".description", "Mesada")
+            .parent()
+            .find("img")
+            .click()
+    })
+
+}) 
 
 /* Criando uma função para abstrair os códigos */
 
 function criarTransacao(descricao, valor) {
-    // Removi o () que estava sobrando na linha acima
     cy.contains("Nova Transação").click()
-    cy.get('#description').type(descricao) // Removi o ponto (.) que estava depois do type
+    cy.get('#description').type(descricao) 
     cy.get('#amount').type(valor)
     cy.get('#date').type("2026-06-26")
     cy.contains('button', "Salvar").click()
 }
+
